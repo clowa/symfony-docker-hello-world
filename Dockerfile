@@ -30,11 +30,15 @@ COPY --from=build /app /var/www/html
 ###> recipes ###
 ###< recipes ###
 
-## Add application code
-# COPY symfony.lock /var/www/html/
-# COPY --parents ./bin \
-#     ./config \
-#     ./src \
-#     ./templates \
-#     /var/www/html/
-COPY . /var/www/html/
+## Add application code (only what is needed at runtime)
+COPY .env .env.dev importmap.php symfony.lock /var/www/html/
+COPY --parents ./bin \
+    ./config \
+    ./public \
+    ./src \
+    ./templates \
+    ./translations \
+    /var/www/html/
+
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var

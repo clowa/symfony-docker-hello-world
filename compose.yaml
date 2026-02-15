@@ -7,11 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      APP_ENV: dev
-      APP_DEBUG: 1
-    volumes:
-      ## Mount the project code as read-write so symphony can write development logs to var/log and cache to var/cache
-      - ./:/var/www/html:rw
+      APP_ENV: prod
+      APP_DEBUG: 0
+      APP_SECRET: local-dev-secret
     ## Use service network mode to share the network stack with nginx
     ## so it can access php-fpm via localhost
     network_mode: service:nginx
@@ -25,8 +23,6 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     ports:
       - 8080:80
-    volumes:
-      - ./:/var/www/html:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost/api/health >/dev/null"]
       interval: 10s

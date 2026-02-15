@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+
+var/
+vendor/
+node_modules/
+
+compose*.yaml
+compose*.yml
+
+tests/
+*.md
