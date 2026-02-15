@@ -1,0 +1,28 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#  SSH daemon configuration for Azure App Service (custom Linux container)
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Purpose:
+# - Enable SSH access to the container for debugging and maintenance
+# - Designed specifically for Azure App Service custom containers
+#
+# WARNING:
+# - This configuration is NOT hardened for general internet exposure
+# - SSH should be enabled only when strictly required
+# - Protect access using network restrictions (Azure, firewall, private endpoints)
+#
+# DOCUMENTATION:
+# - OpenSSH manual: https://man.openbsd.org/sshd_config
+# - Context Azure: https://learn.microsoft.com/en-us/azure/app-service/configure-custom-container?pivots=container-linux&tabs=debian#enable-ssh
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Port 			              2222
+ListenAddress 		      0.0.0.0
+LoginGraceTime          180
+X11Forwarding 	        yes
+Ciphers                 aes128-cbc,3des-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr
+MACs                    hmac-sha1,hmac-sha1-96
+StrictModes 		        yes
+SyslogFacility 	        DAEMON
+PasswordAuthentication  yes
+PermitEmptyPasswords    no
+PermitRootLogin 	      yes
+Subsystem               sftp internal-sftp

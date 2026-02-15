@@ -1,0 +1,32 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Azure Container Registry (ACR) Build Task
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Purpose:
+# - Build the Nginx Docker Main image inside Azure Container Registry 
+#   (--target: select a specific stage from a multi-stage Dockerfile: "base" => PRDO, "add-ssh" => DEBUG)
+# - Push the resulting image directly to the ACR
+#
+# Why ACR Build Tasks:
+# - No local Docker daemon required
+# - Builds run close to the registry (faster pushes)
+# - Ideal for CI/CD pipelines (GitLab, Azure DevOps, GitHub Actions)
+#
+# This task is intended for:
+# - Nginx container used as frontend / reverse proxy
+# - Multi-stage Dockerfile with named build targets
+
+# DOCUMENTATION:
+# https://learn.microsoft.com/azure/container-registry/container-registry-tasks-overview
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+version: v1.1.0
+
+steps:
+  - build: >-
+      -t $Registry/{{.Values.image}} 
+      -f ./docker/nginx/Dockerfile
+      --target {{.Values.target}}
+      .
+    env:
+      - DOCKER_BUILDKIT=1
+  - push:
+      - "$Registry/{{.Values.image}}"

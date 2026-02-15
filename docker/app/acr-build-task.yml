@@ -1,0 +1,29 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Azure Container Registry (ACR) Build Task
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Purpose:
+# - Build the app sidecar Docker image inside Azure (no local Docker daemon required)
+# - Inject environment-specific build arguments
+# - Push the built image to Azure Container Registry. Authentication is handled automatically by ACR Tasks.
+#
+# Typical usage:
+# - Triggered by CI/CD (GitLab)
+# - Or manually via `az acr task run`
+#
+# Docker command : docker build -t <registry>/<image> -f ./docker/app/Dockerfile --build-arg APP_ENV=... --build-arg SSH_CREDENTIALS=... .
+#
+# DOCUMENTATION:
+# https://learn.microsoft.com/azure/container-registry/container-registry-tasks-overview
+# ==============================================================================
+version: v1.1.0
+
+steps:
+  - build: >-
+      -t $Registry/{{.Values.image}} 
+      -f ./docker/app/Dockerfile
+      --build-arg APP_ENV={{.Values.app_env}}
+      .
+    env:
+      - DOCKER_BUILDKIT=1
+  - push:
+      - "$Registry/{{.Values.image}}"
