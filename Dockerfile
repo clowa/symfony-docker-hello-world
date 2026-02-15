@@ -32,7 +32,11 @@ WORKDIR /var/www/html
 
 
 ## Use the default production php.ini that ships with the image
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN if [ "$APP_ENV" = "dev" ]; then \
+        mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"; \
+    else \
+        mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
+    fi
 RUN php-fpm -t
 
 

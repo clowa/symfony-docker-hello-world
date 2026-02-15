@@ -1,9 +1,12 @@
 # Overview
 
+A simple Symfony application to learn how to ship Symfony apps as containers.
+
 ## Lessons learned
 
 ### Symfony
 
+- Symfony CLI isn't required, pure composer can be used instead - eg: `docker run -it --rm -v ./:/app -w /app composer:lts create-project symfony/skeleton:"8.0.*" my_project_directory`
 - To integrate with the Symfony docker recipes, the apps `Dockerfile` has to be at the root of the project and has to contain a recipes section
 
   ```txt
@@ -11,14 +14,15 @@
   ###< recipes ###
   ```
 
-- Symfony CLI isn't required, pure composer can be used instead - eg: `docker run -it --rm -v ./:/app -w /app composer:lts create-project symfony/skeleton:"8.0.*" my_project_directory`
-- The project code has to be located at the same path in both the nginx and php-fpm containers, otherwise nginx won't be able to serve the files. In this example, we used `/var/www/html` _(instead of the nginx default `/usr/share/nginx/html`)_ as the root path for both containers.
 - Symfony want's to write data to the `var/` directory.
 - To see the default Symfony welcome page, the app needs to be in debug mode. This can be achieved by setting `APP_ENV=dev` and `APP_DEBUG=1` in either the one of the `.env` files or in the `compose.yaml` file.
-- In prod env, Symfony should run without dev bundles, so keep `APP_ENV=prod` for the baked image.
+- On prod stage, Symfony should run without dev bundles, so keep `APP_ENV=prod` for the shipped image.
+- Depending on the value of `APP_ENV`, the application expects different dependencies to be installed. For example when `APP_ENV=dev` the composer dev dependencies are expected to be installed.
 
 ### Docker
 
+- The default `php-fpm` contains two predefined `php.ini` files for prod and dev environments. Ensure to copy the proper one you want to use - for example by checking the value of `APP_ENV` and moving the corresponding file to the default `php.ini` location.
+- The project code has to be located at the same path in both the nginx and php-fpm containers, otherwise nginx won't be able to serve the files. In this example, we used `/var/www/html` _(instead of the nginx default `/usr/share/nginx/html`)_ as the root path for both containers.
 - Application code is only baked into the `php-fpm` container, nginx only serves static files and proxies the dynamic requests to the php-fpm container. This keeps images smaller and clean.
 - Even though symfony apps can be shipped as containers it's more convenient to use the symfony dev server for local development and use containers to validate the shippable version.
 
@@ -39,7 +43,7 @@
 - `nginx`: Serves static files and proxies dynamic requests to the `php-fpm` container.
 - `php-fpm`: Executes PHP code and serves the Symfony application. It is the main container that contains the application code and dependencies.
 
-## Sources
+### Sources
 
 - [Symfony - Getting Started](https://symfony.com/doc/current/setup.html)
 - [Symfony - Using Docker](https://symfony.com/doc/current/setup/docker.html)
