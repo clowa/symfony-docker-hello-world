@@ -14,7 +14,7 @@ A simple Symfony application to learn how to ship Symfony apps as containers.
   ###< recipes ###
   ```
 
-- Symfony want's to write data to the `var/` directory.
+- Symfony want's to write data to the `var/` directory. Make sure to create the necessary subdirectories and give write permissions to avoid issues.
 - To see the default Symfony welcome page, the app needs to be in debug mode. This can be achieved by setting `APP_ENV=dev` and `APP_DEBUG=1` in either the one of the `.env` files or in the `compose.yaml` file.
 - On prod stage, Symfony should run without dev bundles, so keep `APP_ENV=prod` for the shipped image.
 - Depending on the value of `APP_ENV`, the application expects different dependencies to be installed. For example when `APP_ENV=dev` the composer dev dependencies are expected to be installed.
@@ -25,6 +25,7 @@ A simple Symfony application to learn how to ship Symfony apps as containers.
 - The project code has to be located at the same path in both the nginx and php-fpm containers, otherwise nginx won't be able to serve the files. In this example, we used `/var/www/html` _(instead of the nginx default `/usr/share/nginx/html`)_ as the root path for both containers.
 - Application code is only baked into the `php-fpm` container, nginx only serves static files and proxies the dynamic requests to the php-fpm container. This keeps images smaller and clean.
 - Even though symfony apps can be shipped as containers it's more convenient to use the symfony dev server for local development and use containers to validate the shippable version.
+- Use apk virtual packages to install build dependencies and easily remove them after the extensions are installed, keeping the image smaller.
 
 ## Testing the app
 
@@ -49,4 +50,5 @@ A simple Symfony application to learn how to ship Symfony apps as containers.
 - [Symfony - Using Docker](https://symfony.com/doc/current/setup/docker.html)
 - [SLING ACADEMY - Symfony hello world](https://www.slingacademy.com/article/getting-started-with-symfony-hello-world-example/)
 - [Symfony - NGINX configuration](https://symfony.com/doc/current/setup/web_server_configuration.html)
+- [Symfony - Directory structure](https://symfony.com/doc/current/configuration/override_dir_structure.html)
 - [Docker Build Best Practices](https://docs.docker.com/build/building/best-practices/)

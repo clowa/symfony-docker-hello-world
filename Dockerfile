@@ -39,6 +39,18 @@ RUN if [ "$APP_ENV" = "dev" ]; then \
     fi
 RUN php-fpm -t
 
+## Install php extensions
+## The usage of the .build-deps virtual environment allows to remove the build
+## dependencies once the extensions are installed, keeping the image smaller.
+
+## Install PostgreSQL extension
+RUN apk add --no-cache \
+        libpq \
+    && apk add --no-cache --virtual .build-deps \
+        postgresql-dev \
+    && docker-php-ext-install pdo_pgsql \
+    && apk del .build-deps
+
 
 ## This copies over the composer dependencies
 COPY --from=build /app /var/www/html
@@ -58,5 +70,6 @@ COPY --parents ./bin \
     ./translations \
     /var/www/html/
 
-RUN mkdir -p var/cache var/log \
+## Ensure symfony can write to the var/ directory
+RUN mkdir -p var/cache var/log var/sessions \
     && chown -R www-data:www-data var
