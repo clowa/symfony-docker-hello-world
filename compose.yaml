@@ -6,10 +6,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-prod}
     environment:
-      APP_ENV: prod
-      APP_DEBUG: 0
-      APP_SECRET: local-dev-secret
+      APP_ENV: ${APP_ENV:-prod}
+      APP_DEBUG: ${APP_DEBUG:-0}
+      APP_SECRET: ${APP_SECRET:-local-dev-secret}
     ## Use service network mode to share the network stack with nginx
     ## so it can access php-fpm via localhost
     network_mode: service:nginx
