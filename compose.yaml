@@ -27,6 +27,12 @@ services:
       - 8080:80
     volumes:
       - ./:/var/www/html:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/api/health >/dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   ###> doctrine/doctrine-bundle ###
   database:
